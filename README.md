@@ -5,6 +5,9 @@
 ## 在新機器上重現環境
 
 ```bash
+# 0. 先裝 pi 本體（提供 `pi` CLI，下面 `pi install` 才有用）
+npm install -g @mariozechner/pi-coding-agent
+
 # 1. extensions（由本 package 提供）
 pi install git:github.com/sihaogu32/Risette
 
