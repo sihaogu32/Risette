@@ -11,7 +11,10 @@ npm install -g @mariozechner/pi-coding-agent
 # 1. extensions（由本 package 提供）
 pi install git:github.com/sihaogu32/Risette
 
-# 2. skills（上游有一鍵指令，不在本 package 內）
+# 2. subagents（獨立 npm package，不打包進本 repo）
+pi install npm:pi-subagents
+
+# 3. skills（上游有一鍵指令，不在本 package 內）
 npm install -g @playwright/cli@latest          # 全域裝 CLI
 npx playwright install chromium                # 裝瀏覽器二進位 (~300MB)
 (cd $(mktemp -d) && playwright-cli install --skills) \
@@ -28,6 +31,12 @@ npx playwright install chromium                # 裝瀏覽器二進位 (~300MB)
 
 `permission-gate.ts` / `protected-paths.ts` 來自 `@mariozechner/pi-coding-agent` 官方 examples（MIT），原樣 copy。
 
-### Skills（不在 package 內，見上方安裝指令）
+### Pi packages（獨立 npm package，見上方安裝指令）
+
+- `npm:pi-subagents`（nicobailon／MIT）— sub-agent 委派工具：single / parallel / chain 模式 + background runs + `/agents` 互動管理 + `/subagents-status` / `/subagents-doctor` + `agentOverrides`；自帶 8 個 builtin agents（scout / researcher / planner / worker / reviewer / context-builder / oracle / delegate）+ 3 個 prompts + 1 個 skill。
+
+  不打包進本 repo 的原因：作者另一個獨立 package，迭代頻繁，分開裝後續才能跟著上游 `pi update` 升級。
+
+### Skills（上游一鍵安裝，不在本 package 內）
 
 - `playwright-cli` — 由 Microsoft 官方 `playwright-cli install --skills` 直接安裝，本 repo 不維護副本
