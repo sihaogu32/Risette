@@ -1,0 +1,12 @@
+{
+  "name": "risette",
+  "version": "0.1.0",
+  "description": "Pi extensions bundle (test package).",
+  "keywords": ["pi-package"],
+  "pi": {
+    "extensions": ["./extensions"]
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*"
+  }
+}
