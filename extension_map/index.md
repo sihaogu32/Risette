@@ -1,6 +1,6 @@
 # pi 擴充紀錄
 
-Last updated: 2026-04-29（改用 npm `pi-subagents` 取代手裝的 examples/subagent，移除對應 extension/agents/prompts）
+Last updated: 2026-05-05（repo 從 pi extension package 翻為獨立 npm CLI v1.0.0；3 個 extension 搬到 `src/extensions/`、playwright-cli skill vendor 進 `skills/`、pi-subagents 仍由 `packages: ["npm:pi-subagents"]` 機制載入）
 
 依 pi 官方 docs 的 **Customization 五面向** 追蹤本機 `~/.pi/agent/` 累積的擴充。新增任何擴充後請更新本檔。
 
