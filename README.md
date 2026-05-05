@@ -11,11 +11,21 @@ risette
 
 `postinstall` 會自動把 `playwright-cli` skill stage 到 `~/.pi/agent/skills/`、把 `npm:pi-subagents` 註冊進 `~/.pi/agent/settings.json`、再 best-effort 下載 chromium-headless-shell（~112MB）。要關掉這段：`RISETTE_SKIP_POSTINSTALL=1 npm install -g risette@latest`。
 
+### 暫時方案：直接從 GitHub 安裝
+
+npm registry 還沒發佈前可以這樣裝：
+
+```bash
+npm install -g github:sihaogu32/Risette#v1.0.0
+```
+
+從 git 安裝時 `prepare` script 會自動 `tsc` 把 `dist/` 生出來（`/dist` 沒 commit 到 repo），之後 `postinstall` lifecycle 與 npm 安裝完全一致。`main` 目前還是舊版 v0.2.0 形態，所以必須用 tag fragment（`#v1.0.0`）對到 v1.0.0 程式碼；正式 release 後會 merge 回 `main` 並改成 `npm install -g risette@latest`。
+
 ## Compatibility
 
 Tested with `@mariozechner/pi-coding-agent ^0.70.5`. Node `>=22.12` required.
 
-v0.2.0 是舊版「pi extension package」形態，凍結在 git tag `v0.2.0`，安裝走 `pi install git:github.com/sihaogu32/Risette` 流程；不再維護。
+v0.2.0 是舊版「pi extension package」形態，凍結在 `main` 分支現存的提交（`27f32fc` 等），安裝走 `pi install git:github.com/sihaogu32/Risette` 流程；不再維護，會在 v1.0.0 merge 回 `main` 時被取代。
 
 ## 內含
 
