@@ -54,6 +54,7 @@
     "@mariozechner/pi-tui": "^0.70.5",
     "@mariozechner/pi-agent-core": "^0.70.5",
     "pi-subagents": "^0.24.0",
+    "playwright": "^1.59.1",
     "typebox": "^1.1.24"
   },
   "devDependencies": {
