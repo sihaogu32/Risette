@@ -1,42 +1,40 @@
 # Risette
 
-把本機 `~/.pi/agent/` 的擴充打包，方便在另一台機器透過 `pi install` 重現環境。
+Opinionated [pi-coding-agent](https://www.npmjs.com/package/@mariozechner/pi-coding-agent) CLI: financial news + safety extensions + playwright-cli skill, one install.
 
-## 在新機器上重現環境
+## 安裝
 
 ```bash
-# 0. 先裝 pi 本體（提供 `pi` CLI，下面 `pi install` 才有用）
-npm install -g @mariozechner/pi-coding-agent
-
-# 1. extensions（由本 package 提供）
-pi install git:github.com/sihaogu32/Risette
-
-# 2. subagents（獨立 npm package，不打包進本 repo）
-pi install npm:pi-subagents
-
-# 3. skills（上游有一鍵指令，不在本 package 內）
-npm install -g @playwright/cli@latest          # 全域裝 CLI
-npx playwright install chromium                # 裝瀏覽器二進位 (~300MB)
-(cd $(mktemp -d) && playwright-cli install --skills) \
-  && cp -r .claude/skills/playwright-cli ~/.pi/agent/skills/
+npm install -g risette@latest
+risette
 ```
 
-## 內容
+`postinstall` 會自動把 `playwright-cli` skill stage 到 `~/.pi/agent/skills/`、把 `npm:pi-subagents` 註冊進 `~/.pi/agent/settings.json`、再 best-effort 跑 `npx playwright install chromium`（~300MB）。要關掉這段：`RISETTE_SKIP_POSTINSTALL=1 npm install -g risette@latest`。
 
-### Extensions（`./extensions/`）
+## Compatibility
 
-- `permission-gate.ts` — 攔截 bash 危險指令（`rm -rf` / `sudo` / `chmod 777` / `chown 777`）
-- `protected-paths.ts` — 攔截 `write` / `edit` 寫到含 `.env` / `.git/` / `node_modules/` 的路徑
-- `financial-news.ts` — 註冊 `/daily-news` command + `save_news_report` tool；agent 用 playwright-cli skill 抓 Google News 後落檔 `~/financial-news/YYYY-MM-DD[-<kw>...].md`（依賴下方 `playwright-cli` skill）
+Tested with `@mariozechner/pi-coding-agent ^0.70.5`. Node `>=22.12` required.
 
-`permission-gate.ts` / `protected-paths.ts` 來自 `@mariozechner/pi-coding-agent` 官方 examples（MIT），原樣 copy。
+v0.2.0 是舊版「pi extension package」形態，凍結在 git tag `v0.2.0`，安裝走 `pi install git:github.com/sihaogu32/Risette` 流程；不再維護。
 
-### Pi packages（獨立 npm package，見上方安裝指令）
+## 內含
 
-- `npm:pi-subagents`（nicobailon／MIT）— sub-agent 委派工具：single / parallel / chain 模式 + background runs + `/agents` 互動管理 + `/subagents-status` / `/subagents-doctor` + `agentOverrides`；自帶 8 個 builtin agents（scout / researcher / planner / worker / reviewer / context-builder / oracle / delegate）+ 3 個 prompts + 1 個 skill。
+### Extensions
 
-  不打包進本 repo 的原因：作者另一個獨立 package，迭代頻繁，分開裝後續才能跟著上游 `pi update` 升級。
+- `permission-gate` — 攔截 bash 危險指令（`rm -rf` / `sudo` / `chmod 777` / `chown 777`）。
+- `protected-paths` — 攔截 `write` / `edit` 寫到含 `.env` / `.git/` / `node_modules/` 的路徑。
+- `financial-news` — 註冊 `/daily-news` command + `save_news_report` tool；agent 用 `playwright-cli` skill 抓 Google News 後落檔 `~/financial-news/YYYY-MM-DD[-<kw>...].md`。
 
-### Skills（上游一鍵安裝，不在本 package 內）
+`permission-gate` / `protected-paths` 取自 `@mariozechner/pi-coding-agent` 官方 examples（MIT）。
 
-- `playwright-cli` — 由 Microsoft 官方 `playwright-cli install --skills` 直接安裝，本 repo 不維護副本
+### Skills
+
+- `playwright-cli/` — vendor 自微軟 [`@playwright/cli`](https://www.npmjs.com/package/@playwright/cli) 官方 `install --skills` 輸出。教 agent 用 `playwright-cli` 操作瀏覽器。
+
+### Pi packages
+
+- `npm:pi-subagents`（[nicobailon](https://github.com/nicobailon/pi-subagents)/MIT）— sub-agent 委派：single / parallel / chain + background runs + `/agents` 互動管理。Risette 在 postinstall 把它註冊進 `settings.json`，由 pi 標準 package loader 載入；之後跟著 `pi update` 升級。
+
+## License
+
+MIT — 見 `LICENSE`。
