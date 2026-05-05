@@ -9,7 +9,7 @@ npm install -g risette@latest
 risette
 ```
 
-`postinstall` 會自動把 `playwright-cli` skill stage 到 `~/.pi/agent/skills/`、把 `npm:pi-subagents` 註冊進 `~/.pi/agent/settings.json`、再 best-effort 跑 `npx playwright install chromium`（~300MB）。要關掉這段：`RISETTE_SKIP_POSTINSTALL=1 npm install -g risette@latest`。
+`postinstall` 會自動把 `playwright-cli` skill stage 到 `~/.pi/agent/skills/`、把 `npm:pi-subagents` 註冊進 `~/.pi/agent/settings.json`、再 best-effort 下載 chromium-headless-shell（~112MB）。要關掉這段：`RISETTE_SKIP_POSTINSTALL=1 npm install -g risette@latest`。
 
 ## Compatibility
 
