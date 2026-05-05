@@ -3,19 +3,16 @@
  * Risette postinstall:
  *   1) stage skills/playwright-cli/ to ~/.pi/agent/skills/playwright-cli/
  *   2) ensure "npm:pi-subagents" is in ~/.pi/agent/settings.json packages[]
- *   3) best-effort: run playwright cli (resolved via node require) to install chromium
+ *   3) best-effort: spawn `npm exec --yes playwright install chromium` via npm_execpath
  *
  * Idempotent. Skipped via RISETTE_SKIP_POSTINSTALL=1 or CI=true.
  * Failures here never block npm install.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, cpSync, readFileSync, writeFileSync } from "node:fs";
-import { createRequire } from "node:module";
 import { join, dirname } from "node:path";
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
-
-const require = createRequire(import.meta.url);
 
 if (process.env.RISETTE_SKIP_POSTINSTALL === "1") process.exit(0);
 
@@ -68,25 +65,25 @@ try {
 }
 
 // 3) Chromium install (skip on CI / offline)
-//    Resolve playwright cli via require.resolve so we don't depend on PATH
-//    (npm install -g doesn't put the new prefix's .bin on subprocess PATH yet).
+//    Spawn `npm exec --yes playwright install chromium` via npm_execpath
+//    (set by npm during lifecycle scripts) so we use absolute paths and
+//    don't depend on PATH — npm install -g doesn't put the new prefix's
+//    .bin on subprocess PATH yet, and npx is not guaranteed on PATH.
 if (process.env.CI === "true" || process.env.CI === "1") {
 	console.log("risette: CI detected — skipping chromium install");
 	process.exit(0);
 }
 try {
-	let playwrightCliPath = null;
-	for (const candidate of ["playwright/cli.js", "@playwright/test/cli.js"]) {
-		try {
-			playwrightCliPath = require.resolve(candidate);
-			break;
-		} catch {}
-	}
-	if (!playwrightCliPath) {
-		console.warn("risette: playwright cli not found in deps; cannot auto-install chromium.");
-		console.warn("        run `npx playwright install chromium` after install completes.");
+	const npmCli = process.env.npm_execpath;
+	if (!npmCli) {
+		console.warn("risette: chromium install skipped — not in npm lifecycle (no npm_execpath).");
+		console.warn("        run `npx playwright install chromium` manually.");
 	} else {
-		const r = spawnSync(process.execPath, [playwrightCliPath, "install", "chromium"], { stdio: "inherit" });
+		const r = spawnSync(
+			process.execPath,
+			[npmCli, "exec", "--yes", "--", "playwright", "install", "chromium"],
+			{ stdio: "inherit" },
+		);
 		if (r.status !== 0) {
 			console.warn(`risette: chromium install exited ${r.status}. Run \`npx playwright install chromium\` manually.`);
 			if (r.error) console.warn("        error:", r.error.message);
