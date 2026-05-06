@@ -1,6 +1,6 @@
 {
   "name": "risette",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Opinionated pi-coding-agent CLI: financial news + safety extensions + playwright skill, one install.",
   "license": "MIT",
   "author": "sihaogu32",
